@@ -1,19 +1,41 @@
 import requests
+from datetime import datetime
 
-# Configuration variables
-SEARCH_API_URL = "support-lab-be.glean.com/rest/api/v1/search"  # The domain for the API endpoint.
+# Default configuration values (modify these directly in the script)
+DOMAIN = "https://support-lab-be.glean.com/rest/api/v1/search"
 SEARCH_API_TOKEN = "<INSERT_GLEAN_SEARCH_API_TOKEN>"  # Replace with your Glean Search API token.
 DATASOURCE = "<INSERT_YOUR_DATASOURCE_NAME>" # Replace with your Glean Datasource name (i.e. ptobpartnerwsXX)
-SEARCH_QUERY = "Propensity to Buy"  # The search term to query.
-NUMBER_OF_RESULTS = 2  # Number of search results to retrieve (allowed values: 1-50).
+QUERY = "Propensity to Buy"  # Replace with your search term
+NUM_RESULTS = 2  # Number of search results to retrieve (allowed values: 1-50)
+
+def search_documents(api_url, token, query, page_size, datasource):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    # Use the documented requestOptions for filtering by datasource.
+    payload = {
+        "query": query,
+        "pageSize": page_size,
+        "includeFields": ["datasource", "metadata", "title", "url", "document"],
+        "requestOptions": {
+            "datasourceFilter": datasource
+        }
+    }
+    print("Sending search payload:")
+    print(payload)
+    
+    response = requests.post(api_url, headers=headers, json=payload)
+    if response.status_code != 200:
+        print(f"Error: Received status code {response.status_code}")
+        print(response.text)
+        return None
+    
+    data = response.json()
+    # Detailed document results are expected to be in the "results" key.
+    return data.get("results", [])
 
 def print_results(results):
-    """
-    Prints the search results in a readable format.
-    
-    Parameters:
-    - results (list): List of document results retrieved from the API.
-    """
     if not results:
         print("No results found.")
         return
@@ -23,52 +45,42 @@ def print_results(results):
         doc = result.get("document", result)
         doc_id = doc.get("id", "N/A")
         title = doc.get("title", "N/A")
-        # Prefer 'url' but fallback to 'viewURL' if present.
         url = doc.get("url") or doc.get("viewURL", "N/A")
         ds = doc.get("datasource", "N/A")
         metadata = doc.get("metadata", {})
         create_time = metadata.get("createTime", "N/A")
         update_time = metadata.get("updateTime", "N/A")
+        try:
+            if create_time != "N/A":
+                create_time = datetime.fromisoformat(create_time).strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            pass
+        try:
+            if update_time != "N/A":
+                update_time = datetime.fromisoformat(update_time).strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            pass
         
-        # Print the details for each document.
         print("-" * 40)
         print(f"Result #{idx+1}")
         print(f"Document ID: {doc_id}")
         print(f"Title      : {title}")
         print(f"URL        : {url}")
         print(f"Datasource : {ds}")
-        print(f"Created    : {create_time}")
-        print(f"Updated    : {update_time}")
-        print("-" * 40)
-        print("\nFull Metadata:")
-        print(f"Metadata   : {metadata}")
-
-def search_documents(api_url, api_token, search_query, num_results):
-    headers = {
-        'Authorization': f'Bearer {api_token}',
-        'Content-Type': 'application/json'
-    }
-    payload = {
-        "datasource": DATASOURCE,
-        "query": search_query,
-        "limit": num_results
-    }
-    response = requests.post(api_url, headers=headers, json=payload)
-    if response.status_code == 200:
-        return response.json().get("results", [])
-    else:
-        print(f"Error {response.status_code}: {response.text}")
-        return []
+        if create_time != "N/A":
+            print(f"Created    : {create_time}")
+        if update_time != "N/A":
+            print(f"Updated    : {update_time}")
 
 def main():
-    """
-    Main function to construct the API URL, send the search query, 
-    and print out the results.
-    """
+    api_url = DOMAIN
+    print("Using the following configuration:")
+    print(f"Domain          : {DOMAIN}")
+    print(f"Datasource      : {DATASOURCE}")
+    print(f"Search Term     : {QUERY}")
+    print(f"Number of Results: {NUM_RESULTS}")
     print("\nSearching for documents...")
-    # Fetch results from the API based on the search query.
-    results = search_documents(SEARCH_API_URL, SEARCH_API_TOKEN, SEARCH_QUERY, NUMBER_OF_RESULTS)
-    # Print the search results in a readable format.
+    results = search_documents(api_url, SEARCH_API_TOKEN, QUERY, NUM_RESULTS, DATASOURCE)
     print_results(results)
 
 if __name__ == "__main__":

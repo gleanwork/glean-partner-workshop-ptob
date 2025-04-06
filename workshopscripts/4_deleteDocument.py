@@ -4,7 +4,7 @@ import json
 # Configuration: set these variables as needed
 DELETION_API_URL = "https://support-lab-be.glean.com/api/index/v1/deletedocument"
 INDEX_API_TOKEN = "<INSERT_GLEAN_INDEXING_API_TOKEN>"  # Replace with your Glean Indexing API token
-DATASOURCE = "<INSERT_GLEAN_INDEXING_API_TOKEN>" # Replace with your Glean Datasource name (i.e. ptobpartnerwsXX)
+DATASOURCE = "<INSERT_YOUR_DATASOURCE_NAME>" # Replace with your Glean Datasource name (i.e. ptobpartnerwsXX)
 DOCUMENT_ID = "<INSERT_DOCUMENT_ID>" # Insert DocumentID. This can be found by running 3_searchDocument.py. The format will be something like: Document_ptobpartnerwsXX
 
 

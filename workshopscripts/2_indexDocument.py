@@ -8,8 +8,8 @@ PTOB_FILE_PATH = "./propensityToBuyData.json" # This doesn't need to be changed,
 
 INDEX_API_TOKEN = "<INSERT_GLEAN_INDEXING_API_TOKEN>"  # Replace with your Glean Indexing API token
 DATASOURCE = "<INSERT_YOUR_DATASOURCE_NAME>" # Replace with your Glean Datasource name (i.e. ptobpartnerwsXX)
-ATTENDEE_NAME = "<INSERT YOUR WORKSHOP ATTENDEE NAME>" # Replace with your Glean Partner Workshop name (i.e. Partner WorkshopXX)
-ATTENDEE_NUMBER = "<INSERT YOUR WORKSHOP ATTENDEE NUMBER>" # Replace with your Glean Partner Workshop number (i.e. partnerwsXX)
+ATTENDEE_NAME = "<INSERT YOUR WORKSHOP ATTENDEE NAME>" # Replace with your Glean Partner Workshop name (i.e. Partner WorkshopXX). This is used for the author and owner fields in the payload.
+ATTENDEE_NUMBER = "<INSERT YOUR WORKSHOP ATTENDEE NUMBER>" # Replace with your Glean Partner Workshop number (i.e. ptobpartnerwsXX). This is used for the author and owner fields in the payload.
 
 
 def index_document(file_path):
